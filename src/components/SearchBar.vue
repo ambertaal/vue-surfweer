@@ -16,7 +16,7 @@
         />
       </div>
 
-      <h2>Weer in placeholder</h2>
+      <h2 class="mt-4 mb-4">Weer in placeholder</h2>
       <div v-for="search in searches" :key="search.id">
         {{ search }}
       </div>
