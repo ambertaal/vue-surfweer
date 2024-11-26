@@ -28,7 +28,7 @@
         <p>Latitude: {{ search.latitude }}</p>
         <p>Longitude: {{ search.longitude }}</p>
         <p>Temperatuur: {{ search.weather.temp }}°C</p>
-        <p>Weertype: {{ search.weather.description }}</p>
+        <p>Weeromschrijving: {{ search.weather.description }}</p>
       </div>
       <v-row class="mt-8 mb-8" no-gutters>
         <span>Overzicht van dagen</span>
@@ -149,6 +149,7 @@
   // API details
   const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
   const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
+  const weatherApiUrl = 'https://api.openweathermap.org/data/2.5/weather'
 
   // Fetch coordinates
   const getCoordinates = async () => {
@@ -164,16 +165,21 @@
 
       const result = response.data[0] // Eerste resultaat van de API
       if (result) {
-        searches.push({
+        const { name, lat, lon } = result
+        const newSearch: Search = {
           id: Date.now(),
-          name: result.name,
-          latitude: result.lat,
-          longitude: result.lon,
+          name,
+          latitude: lat,
+          longitude: lon,
           weather: {
-            temp: 20, // Dummydata voor temperatuur
-            description: 'Zonnig', // Dummydata
+            temp: 0, // Dummydata totdat we het echte weer ophalen
+            description: '',
           },
-        })
+        }
+        searches.push(newSearch)
+
+        // Haal weer op na het toevoegen van de locatie
+        await getWeather(lat, lon, newSearch.id)
       }
     } catch (err) {
       error.value = 'Er is een fout opgetreden bij het ophalen van de gegevens.'
@@ -181,24 +187,42 @@
     }
   }
 
+  const getWeather = async (latitude: number, longitude: number, searchId: number) => {
+    try {
+      const response = await axios.get(weatherApiUrl, {
+        params: {
+          lat: latitude,
+          lon: longitude,
+          units: 'metric', // Voeg metrische eenheden toe voor Celsius
+          appid: apiKey,
+        },
+      })
+
+      const { main, weather } = response.data
+
+      // Zoek de juiste zoekopdracht en werk deze bij
+      const search = searches.find(s => s.id === searchId)
+      if (search) {
+        search.weather.temp = main.temp
+        search.weather.description = weather[0].description
+      }
+    } catch (err) {
+      error.value = 'Er is een fout opgetreden bij het ophalen van het weer.'
+      console.error(err)
+    }
+  }
+
   // Update cityName bij selecteren uit de dropdown
   const updateCityName = () => {
-    console.log('Selected place ID:', selectedPlace.value)
-
-    if (!selectedPlace.value) {
-      console.warn('Geen plaats geselecteerd')
-      return
-    }
+    if (!selectedPlace.value) return
 
     const place = places.find(p => p.id === selectedPlace.value)
     if (place) {
-      console.log('Matched place:', place)
       cityName.value = place.name
       getCoordinates()
-    } else {
-      console.warn('Geen plaats gevonden voor ID:', selectedPlace.value)
     }
   }
+
 </script>
 
 <style lang="scss" scoped>
