@@ -22,90 +22,30 @@
           @change="getCoordinates"
         />
       </div>
-      <!-- Weerdata -->
-      <div v-for="search in searches" :key="search.id">
-        <h2 class="mt-4 mb-4">Weer in {{ search.name }}</h2>
-        <p>Latitude: {{ search.latitude }}</p>
-        <p>Longitude: {{ search.longitude }}</p>
-        <p>Temperatuur: {{ search.weather.temp }}°C</p>
-        <p>Weeromschrijving: {{ search.weather.description }}</p>
+      <!-- Tabel voor 3-uurlijkse voorspelling -->
+      <div v-if="forecast.length > 0">
+        <h2 class="mt-4 mb-4">Weer komende 5 dagen, per 3 uur in {{ formattedCityName }}</h2>
+        <v-table>
+          <thead>
+            <tr>
+              <th>Datum & Tijd</th>
+              <th>Temp (°C)</th>
+              <th>Neerslag (mm)</th>
+              <th>Wind (m/s)</th>
+              <th>Weer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in forecast" :key="entry.dateTime">
+              <td>{{ entry.dateTime }}</td>
+              <td>{{ entry.temp }}°C</td>
+              <td>{{ entry.rain }} mm</td>
+              <td>{{ entry.wind }} m/s</td>
+              <td>{{ entry.description }}</td>
+            </tr>
+          </tbody>
+        </v-table>
       </div>
-      <v-row class="mt-8 mb-8" no-gutters>
-        <span>Overzicht van dagen</span>
-      </v-row>
-      <v-divider />
-      <h2 class="mt-4 mb-4">Details</h2>
-      <v-row no-gutters>
-        <v-col>
-          <v-sheet class="pa-2 ma-2">
-            <v-card
-              class="mx-auto my-8"
-              elevation="16"
-              max-width="344"
-            >
-              <v-card-item>
-                <v-card-title>
-                  Wind
-                </v-card-title>
-
-                <v-card-subtitle>
-                  Card subtitle secondary text
-                </v-card-subtitle>
-              </v-card-item>
-
-              <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </v-card-text>
-            </v-card>
-          </v-sheet>
-        </v-col>
-        <v-col>
-          <v-sheet class="pa-2 ma-2">
-            <v-card
-              class="mx-auto my-8"
-              elevation="16"
-              max-width="344"
-            >
-              <v-card-item>
-                <v-card-title>
-                  Temperatuur
-                </v-card-title>
-
-                <v-card-subtitle>
-                  Card subtitle secondary text
-                </v-card-subtitle>
-              </v-card-item>
-
-              <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </v-card-text>
-            </v-card>
-          </v-sheet>
-        </v-col>
-        <v-col>
-          <v-sheet class="pa-2 ma-2">
-            <v-card
-              class="mx-auto my-8"
-              elevation="16"
-              max-width="344"
-            >
-              <v-card-item>
-                <v-card-title>
-                  Sunset
-                </v-card-title>
-
-                <v-card-subtitle>
-                  Card subtitle secondary text
-                </v-card-subtitle>
-              </v-card-item>
-
-              <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </v-card-text>
-            </v-card>
-          </v-sheet>
-        </v-col>
-      </v-row>
     </v-responsive>
   </v-container>
 </template>
@@ -122,20 +62,25 @@
     longitude: number
   }
 
-  interface Weather {
+  interface ForecastEntry {
+    dateTime: string
     temp: number
+    rain: number
+    wind: number
     description: string
-  }
-
-  interface Search extends Place {
-    weather: Weather
   }
 
   // Reactieve variabelen
   const cityName = ref<string>('')
   const selectedPlace = ref<number | null>(null)
-  const searches = reactive<Search[]>([])
+  const forecast = reactive<ForecastEntry[]>([])
   const error = ref<string | null>(null)
+
+  // Computed property voor cityName met hoofdletter
+  const formattedCityName = computed(() => {
+    if (!cityName.value) return ''
+    return cityName.value.charAt(0).toUpperCase() + cityName.value.slice(1)
+  })
 
   // Bekende plaatsen
   const places: Place[] = [
@@ -149,7 +94,7 @@
   // API details
   const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
   const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
-  const weatherApiUrl = 'https://api.openweathermap.org/data/2.5/weather'
+  const forecastApiUrl = 'https://api.openweathermap.org/data/2.5/forecast'
 
   // Fetch coordinates
   const getCoordinates = async () => {
@@ -164,22 +109,9 @@
       })
 
       const result = response.data[0] // Eerste resultaat van de API
+      // Haal weer op na het toevoegen van de locatie
       if (result) {
-        const { name, lat, lon } = result
-        const newSearch: Search = {
-          id: Date.now(),
-          name,
-          latitude: lat,
-          longitude: lon,
-          weather: {
-            temp: 0, // Dummydata totdat we het echte weer ophalen
-            description: '',
-          },
-        }
-        searches.push(newSearch)
-
-        // Haal weer op na het toevoegen van de locatie
-        await getWeather(lat, lon, newSearch.id)
+        await get3HourlyForecast(result.lat, result.lon)
       }
     } catch (err) {
       error.value = 'Er is een fout opgetreden bij het ophalen van de gegevens.'
@@ -187,28 +119,31 @@
     }
   }
 
-  const getWeather = async (latitude: number, longitude: number, searchId: number) => {
+  const get3HourlyForecast = async (latitude: number, longitude: number) => {
     try {
-      const response = await axios.get(weatherApiUrl, {
+      const response = await axios.get(forecastApiUrl, {
         params: {
           lat: latitude,
           lon: longitude,
-          units: 'metric', // Voeg metrische eenheden toe voor Celsius
-          appid: apiKey,
+          units: 'metric', // Gebruik metrische eenheden (Celsius)
+          appid: apiKey, // API-sleutel
         },
       })
 
-      const { main, weather } = response.data
-
-      // Zoek de juiste zoekopdracht en werk deze bij
-      const search = searches.find(s => s.id === searchId)
-      if (search) {
-        search.weather.temp = main.temp
-        search.weather.description = weather[0].description
-      }
-    } catch (err) {
-      error.value = 'Er is een fout opgetreden bij het ophalen van het weer.'
-      console.error(err)
+      const forecastData = response.data.list // 3-uurlijkse gegevens
+      forecast.splice(
+        0,
+        forecast.length,
+        ...forecastData.map((entry: any) => ({
+          dateTime: new Date(entry.dt * 1000).toLocaleString(), // Datum en tijd
+          temp: entry.main.temp, // Temperatuur
+          rain: entry.rain ? entry.rain['3h'] || 0 : 0, // Neerslag in mm
+          wind: entry.wind.speed, // Windsnelheid in m/s
+          description: entry.weather[0].description, // Weersbeschrijving
+        }))
+      )
+    } catch (error) {
+      console.error('Error fetching 3-hourly forecast:', error)
     }
   }
 
