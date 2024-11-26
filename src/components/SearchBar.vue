@@ -12,13 +12,15 @@
           item-value="id"
           :items="places"
           label="Kies een plaats"
-          @update:menu="addSearch"
+          @update:menu="getCoordinates"
         />
       </div>
       <div v-for="search in searches" :key="search.id">
         <h2 class="mt-4 mb-4">Weer in {{ search.name }}</h2>
         <p>Latitude: {{ search.latitude }}</p>
         <p>Longitude: {{ search.longitude }}</p>
+        <p>Temperatuur: {{ search.weather.temp }}°C</p>
+        <p>Weertype: {{ search.weather.description }}</p>
       </div>
       <v-row class="mt-8 mb-8" no-gutters>
         <span>Overzicht van dagen</span>
@@ -98,10 +100,16 @@
       </v-row>
     </v-responsive>
   </v-container>
+  <div>
+    <ul>
+      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
+  import axios from 'axios'
 
   // Definieer interfaces voor typecontrole
   interface Place {
@@ -111,13 +119,14 @@
     longitude: number
   }
 
-  interface Search extends Place {
-    id: number
+  interface Weather {
+    temp: number
+    description: string
   }
 
-  // Reactieve variabelen
-  const selectedPlace = ref<number | null>(null)
-  const searches = reactive<Search[]>([])
+  interface Search extends Place {
+    weather: Weather
+  }
 
   const places: Place[] = [
     { id: 1, name: 'Scheveningen', latitude: 52.1089, longitude: 4.2769 },
@@ -127,20 +136,44 @@
     { id: 5, name: 'Vlieland', latitude: 53.3037, longitude: 5.0667 },
   ]
 
-  // Functie om zoekopdrachten toe te voegen
-  const addSearch = () => {
-    const selected = places.find(place => place.id === selectedPlace.value)
-    if (selected) {
-      const newSearch: Search = { ...selected, id: searches.length + 1 }
-      console.log('new search: ', newSearch)
-      searches.push(newSearch)
-      selectedPlace.value = null // Reset de dropdown
+  // Reactieve variabelen
+  const selectedPlace = ref<number | null>(null)
+  const searches = reactive<Search[]>([])
+
+  // Methods
+  const items = ref<any[]>([])
+
+  // API details
+  const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
+  const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
+
+  // State variables
+  const error = ref<string | null>(null)
+  const cityName = ref<string>('Amsterdam') // Voeg een standaardstad toe voor testdoeleinden
+
+  // Fetch coordinates on component mount
+  const getCoordinates = async () => {
+    try {
+      const response = await axios.get(`${geoApiUrl}`, {
+        params: {
+          q: cityName.value, // Gebruik cityName.value omdat het een ref is
+          limit: 1,
+          appid: apiKey,
+        },
+      })
+      console.log(response.data) // Controleer de data in de respons
+    } catch (err) {
+      error.value = 'Er is een fout opgetreden bij het ophalen van de coördinaten.'
+      console.error(err)
     }
   }
+
+  // Use onMounted lifecycle hook
+  onMounted(getCoordinates)
 </script>
 
 <style lang="scss" scoped>
 .text-h2 {
-  margin-bottom: 16px;
+  margin-bottom: 16px
 }
 </style>
