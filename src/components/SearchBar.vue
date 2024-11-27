@@ -40,21 +40,13 @@
             </template>
             <span>
               <strong>Criteria voor surfadvies</strong>
-              <p>Windsnelheid:</p>
-              <ul>
-                <li>Geschikt: 3-10 m/s.</li>
-                <li>Beginners: 3-7 m/s.</li>
-                <li>Gevorderden: 7-10 m/s.</li>
-              </ul>
-              <p>Golfhoogte:</p>
-              <ul>
-                <li>Geschikt: 0.5m - 2m.</li>
-                <li>Beginners: 0.5m - 1m.</li>
-                <li>Gevorderden: 1m - 2m.</li>
-              </ul>
-              <p>Regen:</p>
+              <p><strong>Windsnelheid:</strong></p>
+              <p>Geschikt: 3-10 m/s.</p>
+              <p>Beginners: 3-7 m/s.</p>
+              <p>Gevorderden: 7-10 m/s.</p>
+              <strong>Regen:</strong>
               <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
-              <p>Temperatuur:</p>
+              <strong>Temperatuur:</strong>
               <p>Minimaal 12°C.</p>
             </span>
           </v-tooltip>
