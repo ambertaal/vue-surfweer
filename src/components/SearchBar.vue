@@ -22,8 +22,44 @@
           @change="getCoordinates"
         />
       </div>
+      <v-divider class="mt-4 mb-4" />
       <!-- Tabel voor 3-uurlijkse voorspelling -->
       <div v-if="forecast.length > 0">
+        <p class="text-body-1">
+          {{ surfAdvice }}
+          <v-tooltip location="top">
+            <template #activator="{ props }">
+              <v-icon
+                class="ml-2"
+                color="info"
+                style="cursor: pointer;"
+                v-bind="props"
+              >
+                mdi-information-outline
+              </v-icon>
+            </template>
+            <span>
+              <strong>Criteria voor surfadvies</strong>
+              <p>Windsnelheid:</p>
+              <ul>
+                <li>Geschikt: 3-10 m/s.</li>
+                <li>Beginners: 3-7 m/s.</li>
+                <li>Gevorderden: 7-10 m/s.</li>
+              </ul>
+              <p>Golfhoogte:</p>
+              <ul>
+                <li>Geschikt: 0.5m - 2m.</li>
+                <li>Beginners: 0.5m - 1m.</li>
+                <li>Gevorderden: 1m - 2m.</li>
+              </ul>
+              <p>Regen:</p>
+              <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
+              <p>Temperatuur:</p>
+              <p>Minimaal 12°C.</p>
+            </span>
+          </v-tooltip>
+        </p>
+        <v-divider class="mt-4 mb-4" />
         <h2 class="mt-4 mb-4">Weer komende 5 dagen, per 3 uur in {{ formattedCityName }}</h2>
         <v-table>
           <thead>
@@ -158,10 +194,50 @@
     }
   }
 
+  // Computed property voor surfadvies
+  const surfAdvice = computed(() => {
+    if (forecast.length === 0) return 'Geen gegevens beschikbaar voor surfadvies.'
+
+    let beginnerFriendly = false
+    let advancedFriendly = false
+
+    for (const entry of forecast) {
+      const { temp, wind, rain } = entry
+
+      // Controleer of het geschikt is voor beginners
+      if (temp >= 12 && wind >= 3 && wind <= 7 && (!rain || rain < 2)) {
+        beginnerFriendly = true
+      }
+
+      // Controleer of het geschikt is voor gevorderden
+      if (temp >= 12 && wind > 7 && wind <= 10 && (!rain || rain < 2)) {
+        advancedFriendly = true
+      }
+    }
+
+    if (beginnerFriendly && advancedFriendly) {
+      return 'Het weer is geschikt om te surfen voor zowel beginners als gevorderden!'
+    } else if (beginnerFriendly) {
+      return 'Het weer is geschikt om te surfen voor beginners.'
+    } else if (advancedFriendly) {
+      return 'Het weer is geschikt om te surfen voor gevorderden.'
+    } else {
+      return 'Het weer is momenteel niet geschikt om te surfen.'
+    }
+  })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .text-h2 {
   margin-bottom: 16px
 }
+
+.v-tooltip > .v-overlay__content {
+  background-color: green !important;
+  color: white !important;
+  font-size: 14px !important;
+  padding: 10px !important;
+  border-radius: 8px;
+}
+
 </style>
