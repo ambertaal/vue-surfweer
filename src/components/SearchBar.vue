@@ -69,6 +69,7 @@
               <th>Neerslag (mm)</th>
               <th>Wind (m/s)</th>
               <th>Weer</th>
+              <th>Surfscore</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +79,7 @@
               <td>{{ entry.rain }} mm</td>
               <td>{{ entry.wind }} m/s</td>
               <td>{{ entry.description }}</td>
+              <td>{{ entry.surfScore }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -104,6 +106,7 @@
     rain: number
     wind: number
     description: string
+    surfScore: number
   }
 
   // Reactieve variabelen
@@ -155,6 +158,7 @@
     }
   }
 
+  // Haal 3-uurlijkse voorspellingen op
   const get3HourlyForecast = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get(forecastApiUrl, {
@@ -176,11 +180,27 @@
           rain: entry.rain ? entry.rain['3h'] || 0 : 0, // Neerslag in mm
           wind: entry.wind.speed, // Windsnelheid in m/s
           description: entry.weather[0].description, // Weersbeschrijving
+          surfScore: calculateSurfScore(
+            entry.main.temp,
+            entry.wind.speed,
+            entry.rain ? entry.rain['3h'] || 0 : 0
+          ), // Voeg surfScore toe
         }))
       )
     } catch (error) {
       console.error('Error fetching 3-hourly forecast:', error)
     }
+  }
+
+  // Bereken de surfScore op basis van criteria
+  const calculateSurfScore = (temp: number, wind: number, rain: number): number => {
+    let score = 10
+
+    if (temp < 12) score -= 3
+    if (wind < 3 || wind > 10) score -= 3
+    if (rain > 2) score -= 2
+
+    return Math.max(0, Math.min(10, score)) // Zorg ervoor dat de score tussen 0 en 10 ligt
   }
 
   // Update cityName bij selecteren uit de dropdown
