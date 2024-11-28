@@ -6,35 +6,12 @@
     >
       <div class="text-center">
         <h1 class="text-h2 font-weight-bold">Wanneer kan ik surfen?</h1>
-        <v-row
-          align="center"
-          class="d-flex"
-          justify="center"
-        >
-          <!-- Dropdown voor bekende plaatsen -->
-          <v-col cols="12" lg="4">
-            <v-select
-              v-model="selectedCity"
-              item-title="name"
-              item-value="id"
-              :items="places"
-              label="Kies een stad"
-              @update:model-value="updateCityName"
-            />
-          </v-col>
-
-          <span class="seperator-text">of</span>
-
-          <!-- Invoerveld voor stad -->
-          <v-col cols="12" lg="4">
-            <v-text-field
-              v-model="cityName"
-              clearable
-              label="Voer een stad in"
-              @keyup.enter="handleEnter"
-            />
-          </v-col>
-        </v-row>
+        <CitySelector
+          v-model="selectedCity"
+          :places="places"
+          @city-changed="handleCityChange"
+          @update:model-value="updateCity"
+        />
       </div>
       <v-divider class="mt-4 mb-4" />
       <!-- Tabel voor 3-uurlijkse voorspelling -->
@@ -92,8 +69,9 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, reactive, ref } from 'vue'
+  import { computed, onMounted, reactive, ref } from 'vue'
   import axios from 'axios'
+  import CitySelector from './CitySelector.vue'
 
   onMounted(() => {
     const place = places.find(p => p.id === Number(selectedCity.value))
@@ -122,15 +100,9 @@
 
   // Reactieve variabelen
   const cityName = ref<string>('Scheveningen')
-  const selectedCity = ref<number>(1)
+  const selectedCity = ref<number | null>(null)
   const forecast = reactive<ForecastEntry[]>([])
   const error = ref<string | null>(null)
-
-  // Computed property voor cityName met hoofdletter
-  const formattedCityName = computed(() => {
-    const place = places.find(p => p.id === selectedCity.value)
-    return place ? place.name : ''
-  })
 
   // Bekende plaatsen
   const places: Place[] = [
@@ -143,44 +115,23 @@
     { id: 7, name: 'Los Angeles, CA, USA', latitude: 34.052235, longitude: -118.243683 },
   ]
 
+  // Computed property voor cityName met hoofdletter
+  const formattedCityName = computed(() => {
+    const place = places.find(p => p.id === selectedCity.value)
+    return place ? place.name : cityName.value || ''
+  })
+
   // API details
   const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
   const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
   const forecastApiUrl = 'https://api.openweathermap.org/data/2.5/forecast'
 
-  const handleEnter = () => {
-    if (cityName.value.trim()) {
-      const place = places.find(p => p.name.toLowerCase() === cityName.value.trim().toLowerCase())
-      if (place) {
-        selectedCity.value = place.id
-        cityName.value = place.name
-        getCoordinates()
-      } else {
-        console.error('De ingevoerde stad komt niet overeen met bekende steden.')
-      }
-    }
-  }
-
   // Fetch coordinates
   const getCoordinates = async () => {
-    if (!cityName.value) return
-    try {
-      const response = await axios.get(geoApiUrl, {
-        params: {
-          q: cityName.value,
-          limit: 1,
-          appid: apiKey,
-        },
-      })
-
-      const result = response.data[0] // Eerste resultaat van de API
-      // Haal weer op na het toevoegen van de locatie
-      if (result) {
-        await get3HourlyForecast(result.lat, result.lon)
-      }
-    } catch (err) {
-      error.value = 'Er is een fout opgetreden bij het ophalen van de gegevens.'
-      console.error(err)
+    const place = places.find(p => p.id === selectedCity.value)
+    if (place) {
+      // Coördinaten van een bekende plaats
+      await get3HourlyForecast(place.latitude, place.longitude)
     }
   }
 
@@ -220,15 +171,50 @@
     }
   }
 
-  // Update cityName bij selecteren uit de dropdown
-  const updateCityName = () => {
-    if (!selectedCity.value) return
+  const handleCityChange = async (newCityName: string) => {
+    cityName.value = newCityName.trim()
 
-    const place = places.find(p => p.id === selectedCity.value)
-    if (place) {
-      cityName.value = place.name
-      getCoordinates()
+    if (!cityName.value) return
+
+    const matchedPlace = places.find(
+      p => p.name.toLowerCase() === cityName.value.toLowerCase()
+    )
+
+    if (matchedPlace) {
+      // Bekende stad
+      selectedCity.value = matchedPlace.id
+      await getCoordinates() // Haalt coördinaten van bekende plaatsen op
+    } else {
+      // Onbekende stad, gebruik Geo API
+      selectedCity.value = null
+      try {
+        const response = await axios.get(geoApiUrl, {
+          params: {
+            q: cityName.value,
+            limit: 1,
+            appid: apiKey,
+          },
+        })
+
+        if (response.data.length > 0) {
+          const result = response.data[0]
+          await get3HourlyForecast(result.lat, result.lon)
+        } else {
+          error.value = `Geen resultaten gevonden voor "${cityName.value}".`
+        }
+      } catch (err) {
+        error.value = 'Er is een fout opgetreden bij het ophalen van de gegevens.'
+        console.error(err)
+      }
     }
+  }
+
+  // Update cityName bij selecteren uit de dropdown
+  const updateCity = (newCityId: number) => {
+    selectedCity.value = newCityId
+    const place = places.find(p => p.id === newCityId)
+    if (place) cityName.value = place.name
+    getCoordinates()
   }
 
   // Functie om surfadvies te bepalen
