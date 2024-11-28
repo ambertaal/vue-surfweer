@@ -6,51 +6,39 @@
     >
       <div class="text-center">
         <h1 class="text-h2 font-weight-bold">Wanneer kan ik surfen?</h1>
-        <!-- Dropdown voor bekende plaatsen -->
-        <v-select
-          v-model="selectedPlace"
-          item-title="name"
-          item-value="id"
-          :items="places"
-          label="Kies een plaats"
-          @update:model-value="updateCityName"
-        />
-        <!-- Invoerveld voor stad -->
-        <v-text-field
-          v-model="cityName"
-          label="Voer een stad in"
-          @change="getCoordinates"
-        />
+        <v-row
+          align="center"
+          class="d-flex"
+          justify="center"
+        >
+          <!-- Dropdown voor bekende plaatsen -->
+          <v-col cols="12" lg="4">
+            <v-select
+              v-model="selectedCity"
+              item-title="name"
+              item-value="id"
+              :items="places"
+              label="Kies een stad"
+              @update:model-value="updateCityName"
+            />
+          </v-col>
+
+          <span class="seperator-text">of</span>
+
+          <!-- Invoerveld voor stad -->
+          <v-col cols="12" lg="4">
+            <v-text-field
+              v-model="cityName"
+              clearable
+              label="Voer een stad in"
+              @keyup.enter="handleEnter"
+            />
+          </v-col>
+        </v-row>
       </div>
       <v-divider class="mt-4 mb-4" />
       <!-- Tabel voor 3-uurlijkse voorspelling -->
       <div v-if="forecast.length > 0">
-        <p class="text-body-1">
-          <v-tooltip location="top">
-            <template #activator="{ props }">
-              <v-icon
-                class="ml-2"
-                color="info"
-                style="cursor: pointer"
-                v-bind="props"
-              >
-                mdi-information-outline
-              </v-icon>
-            </template>
-            <span>
-              <strong>Criteria voor surfadvies</strong>
-              <p><strong>Windsnelheid:</strong></p>
-              <p>Geschikt: 3-10 m/s.</p>
-              <p>Beginners: 3-7 m/s.</p>
-              <p>Gevorderden: 7-10 m/s.</p>
-              <strong>Regen:</strong>
-              <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
-              <strong>Temperatuur:</strong>
-              <p>Minimaal 12°C.</p>
-            </span>
-          </v-tooltip>
-        </p>
-        <v-divider class="mt-4 mb-4" />
         <h2 class="mt-4 mb-4">Weer komende 5 dagen, per 3 uur in {{ formattedCityName }}</h2>
         <v-table>
           <thead>
@@ -60,7 +48,31 @@
               <th>Neerslag (mm)</th>
               <th>Wind (m/s)</th>
               <th>Weer</th>
-              <th>Surfadvies</th>
+              <th>Surfadvies
+                <v-tooltip location="top">
+                  <template #activator="{ props }">
+                    <v-icon
+                      class="ml-2"
+                      color="info"
+                      style="cursor: pointer"
+                      v-bind="props"
+                    >
+                      mdi-information-outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    <strong>Criteria voor surfadvies</strong>
+                    <p><strong>Windsnelheid:</strong></p>
+                    <p>Geschikt: 3-10 m/s.</p>
+                    <p>Beginners: 3-7 m/s.</p>
+                    <p>Gevorderden: 7-10 m/s.</p>
+                    <strong>Regen:</strong>
+                    <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
+                    <strong>Temperatuur:</strong>
+                    <p>Minimaal 12°C.</p>
+                  </span>
+                </v-tooltip>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -80,8 +92,16 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import axios from 'axios'
+
+  onMounted(() => {
+    const place = places.find(p => p.id === Number(selectedCity.value))
+    if (place) {
+      cityName.value = place.name
+      getCoordinates()
+    }
+  })
 
   // Definieer interfaces voor typecontrole
   interface Place {
@@ -101,15 +121,15 @@
   }
 
   // Reactieve variabelen
-  const cityName = ref<string>('')
-  const selectedPlace = ref<number | null>(null)
+  const cityName = ref<string>('Scheveningen')
+  const selectedCity = ref<number>(1)
   const forecast = reactive<ForecastEntry[]>([])
   const error = ref<string | null>(null)
 
   // Computed property voor cityName met hoofdletter
   const formattedCityName = computed(() => {
-    if (!cityName.value) return ''
-    return cityName.value.charAt(0).toUpperCase() + cityName.value.slice(1)
+    const place = places.find(p => p.id === selectedCity.value)
+    return place ? place.name : ''
   })
 
   // Bekende plaatsen
@@ -127,6 +147,19 @@
   const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
   const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
   const forecastApiUrl = 'https://api.openweathermap.org/data/2.5/forecast'
+
+  const handleEnter = () => {
+    if (cityName.value.trim()) {
+      const place = places.find(p => p.name.toLowerCase() === cityName.value.trim().toLowerCase())
+      if (place) {
+        selectedCity.value = place.id
+        cityName.value = place.name
+        getCoordinates()
+      } else {
+        console.error('De ingevoerde stad komt niet overeen met bekende steden.')
+      }
+    }
+  }
 
   // Fetch coordinates
   const getCoordinates = async () => {
@@ -189,9 +222,9 @@
 
   // Update cityName bij selecteren uit de dropdown
   const updateCityName = () => {
-    if (!selectedPlace.value) return
+    if (!selectedCity.value) return
 
-    const place = places.find(p => p.id === selectedPlace.value)
+    const place = places.find(p => p.id === selectedCity.value)
     if (place) {
       cityName.value = place.name
       getCoordinates()
@@ -221,6 +254,12 @@
 
 .text-body-1 {
   white-space: pre-wrap; /* Zorgt dat \n wordt gerespecteerd */
+}
+
+.seperator-text {
+  margin: 0 16px; /* Ruimte tussen de velden */
+  font-size: 1rem;
+  align-self: center;
 }
 
 .v-tooltip > .v-overlay__content {
