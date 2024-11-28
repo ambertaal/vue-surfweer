@@ -26,13 +26,12 @@
       <!-- Tabel voor 3-uurlijkse voorspelling -->
       <div v-if="forecast.length > 0">
         <p class="text-body-1">
-          {{ surfAdvice }}
           <v-tooltip location="top">
             <template #activator="{ props }">
               <v-icon
                 class="ml-2"
                 color="info"
-                style="cursor: pointer;"
+                style="cursor: pointer"
                 v-bind="props"
               >
                 mdi-information-outline
@@ -61,7 +60,7 @@
               <th>Neerslag (mm)</th>
               <th>Wind (m/s)</th>
               <th>Weer</th>
-              <th>Surfscore</th>
+              <th>Surfadvies</th>
             </tr>
           </thead>
           <tbody>
@@ -71,7 +70,7 @@
               <td>{{ entry.rain }} mm</td>
               <td>{{ entry.wind }} m/s</td>
               <td>{{ entry.description }}</td>
-              <td>{{ entry.surfScore }}</td>
+              <td>{{ entry.surfAdvice }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -98,7 +97,7 @@
     rain: number
     wind: number
     description: string
-    surfScore: number
+    surfAdvice: string
   }
 
   // Reactieve variabelen
@@ -120,6 +119,8 @@
     { id: 3, name: 'Katwijk', latitude: 52.203, longitude: 4.3988 },
     { id: 4, name: 'Wijk aan Zee', latitude: 52.4936, longitude: 4.607 },
     { id: 5, name: 'Vlieland', latitude: 53.3037, longitude: 5.0667 },
+    { id: 6, name: 'Porto, Portugal', latitude: 41.14961, longitude: -8.61099 },
+    { id: 7, name: 'Los Angeles, CA, USA', latitude: 34.052235, longitude: -118.243683 },
   ]
 
   // API details
@@ -166,33 +167,24 @@
       forecast.splice(
         0,
         forecast.length,
-        ...forecastData.map((entry: any) => ({
-          dateTime: new Date(entry.dt * 1000).toLocaleString(), // Datum en tijd
-          temp: entry.main.temp, // Temperatuur
-          rain: entry.rain ? entry.rain['3h'] || 0 : 0, // Neerslag in mm
-          wind: entry.wind.speed, // Windsnelheid in m/s
-          description: entry.weather[0].description, // Weersbeschrijving
-          surfScore: calculateSurfScore(
-            entry.main.temp,
-            entry.wind.speed,
-            entry.rain ? entry.rain['3h'] || 0 : 0
-          ), // Voeg surfScore toe
-        }))
+        ...forecastData.map((entry: any) => {
+          const temp = entry.main.temp
+          const wind = entry.wind.speed
+          const rain = entry.rain ? entry.rain['3h'] || 0 : 0
+
+          return {
+            dateTime: new Date(entry.dt * 1000).toLocaleString(), // Datum en tijd
+            temp, // Temperatuur
+            rain, // Neerslag in mm
+            wind, // Windsnelheid in m/s
+            description: entry.weather[0].description, // Weersbeschrijving
+            surfAdvice: determineSurfAdvice(temp, wind, rain), // Surfadvies per entry
+          }
+        })
       )
     } catch (error) {
       console.error('Error fetching 3-hourly forecast:', error)
     }
-  }
-
-  // Bereken de surfScore op basis van criteria
-  const calculateSurfScore = (temp: number, wind: number, rain: number): number => {
-    let score = 10
-
-    if (temp < 12) score -= 3
-    if (wind < 3 || wind > 10) score -= 3
-    if (rain > 2) score -= 2
-
-    return Math.max(0, Math.min(10, score)) // Zorg ervoor dat de score tussen 0 en 10 ligt
   }
 
   // Update cityName bij selecteren uit de dropdown
@@ -206,42 +198,29 @@
     }
   }
 
-  // Computed property voor surfadvies
-  const surfAdvice = computed(() => {
-    if (forecast.length === 0) return 'Geen gegevens beschikbaar voor surfadvies.'
-
-    let beginnerFriendly = false
-    let advancedFriendly = false
-
-    for (const entry of forecast) {
-      const { temp, wind, rain } = entry
-
-      // Controleer of het geschikt is voor beginners
-      if (temp >= 12 && wind >= 3 && wind <= 7 && (!rain || rain < 2)) {
-        beginnerFriendly = true
-      }
-
-      // Controleer of het geschikt is voor gevorderden
-      if (temp >= 12 && wind > 7 && wind <= 10 && (!rain || rain < 2)) {
-        advancedFriendly = true
-      }
-    }
-
-    if (beginnerFriendly && advancedFriendly) {
-      return 'Het weer is geschikt om te surfen voor zowel beginners als gevorderden!'
-    } else if (beginnerFriendly) {
-      return 'Het weer is geschikt om te surfen voor beginners.'
-    } else if (advancedFriendly) {
-      return 'Het weer is geschikt om te surfen voor gevorderden.'
+  // Functie om surfadvies te bepalen
+  const determineSurfAdvice = (
+    temp: number,
+    wind: number,
+    rain: number
+  ): string => {
+    if (temp >= 12 && wind >= 3 && wind <= 7 && rain < 2) {
+      return 'Geschikt voor beginners'
+    } else if (temp >= 12 && wind > 7 && wind <= 10 && rain < 2) {
+      return 'Geschikt voor gevorderden'
     } else {
-      return 'Het weer is momenteel niet geschikt om te surfen.'
+      return 'Niet geschikt'
     }
-  })
+  }
 </script>
 
 <style lang="scss">
 .text-h2 {
   margin-bottom: 16px
+}
+
+.text-body-1 {
+  white-space: pre-wrap; /* Zorgt dat \n wordt gerespecteerd */
 }
 
 .v-tooltip > .v-overlay__content {
