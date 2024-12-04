@@ -11,29 +11,7 @@
           <th>Wind (m/s)</th>
           <th>Weer</th>
           <th>Surfadvies
-            <v-tooltip location="top">
-              <template #activator="{ props }">
-                <v-icon
-                  class="ml-2"
-                  color="info"
-                  style="cursor: pointer"
-                  v-bind="props"
-                >
-                  mdi-information-outline
-                </v-icon>
-              </template>
-              <span>
-                <strong>Criteria voor surfadvies</strong>
-                <p><strong>Windsnelheid:</strong></p>
-                <p>Geschikt: 3-10 m/s.</p>
-                <p>Beginners: 3-7 m/s.</p>
-                <p>Gevorderden: 7-10 m/s.</p>
-                <strong>Regen:</strong>
-                <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
-                <strong>Temperatuur:</strong>
-                <p>Minimaal 12°C.</p>
-              </span>
-            </v-tooltip>
+            <SurfAdviceTooltip />
           </th>
         </tr>
       </thead>
@@ -53,6 +31,7 @@
 
 <script setup lang="ts">
   import { defineProps } from 'vue'
+  import SurfAdviceTooltip from './SurfAdviceTooltip.vue'
 
   interface ForecastEntry {
     dateTime: string
