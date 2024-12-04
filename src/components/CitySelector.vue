@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineEmits, defineProps, ref, watch } from 'vue'
+  import { defineProps, ref, watch } from 'vue'
 
   // Typen voor de 'places' array en geselecteerde stad
   interface Place {
@@ -53,6 +53,7 @@
   const cityName = ref('')
 
   watch(selectedCity, newCityId => {
+    console.log('newCityId: ', newCityId)
     if (newCityId === null) {
       cityName.value = ''
     } else {
@@ -65,8 +66,14 @@
   })
 
   watch(cityName, newCityName => {
+    console.log('newCityName: ', newCityName)
+    if (!newCityName?.trim()) {
+      selectedCity.value = null
+      return
+    }
+
     const matchedPlace = props.places.find(
-      p => p.name.toLowerCase() === newCityName.toLowerCase()
+      p => p.name.toLowerCase() === newCityName.trim().toLowerCase()
     )
     if (matchedPlace) {
       selectedCity.value = matchedPlace.id
@@ -76,6 +83,8 @@
 
   const onEnter = () => {
     const trimmedName = cityName.value.trim()
+    console.log('trimmedName: ', trimmedName)
+
     emit('cityChanged', trimmedName)
   }
 

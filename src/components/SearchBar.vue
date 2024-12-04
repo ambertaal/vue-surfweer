@@ -14,56 +14,10 @@
         />
       </div>
       <v-divider class="mt-4 mb-4" />
-      <!-- Tabel voor 3-uurlijkse voorspelling -->
-      <div v-if="forecast.length > 0">
-        <h2 class="mt-4 mb-4">Weer komende 5 dagen, per 3 uur in {{ formattedCityName }}</h2>
-        <v-table>
-          <thead>
-            <tr>
-              <th>Datum & Tijd</th>
-              <th>Temp (°C)</th>
-              <th>Neerslag (mm)</th>
-              <th>Wind (m/s)</th>
-              <th>Weer</th>
-              <th>Surfadvies
-                <v-tooltip location="top">
-                  <template #activator="{ props }">
-                    <v-icon
-                      class="ml-2"
-                      color="info"
-                      style="cursor: pointer"
-                      v-bind="props"
-                    >
-                      mdi-information-outline
-                    </v-icon>
-                  </template>
-                  <span>
-                    <strong>Criteria voor surfadvies</strong>
-                    <p><strong>Windsnelheid:</strong></p>
-                    <p>Geschikt: 3-10 m/s.</p>
-                    <p>Beginners: 3-7 m/s.</p>
-                    <p>Gevorderden: 7-10 m/s.</p>
-                    <strong>Regen:</strong>
-                    <p>Regen &lt; 2mm/3 uur is aanvaardbaar.</p>
-                    <strong>Temperatuur:</strong>
-                    <p>Minimaal 12°C.</p>
-                  </span>
-                </v-tooltip>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="entry in forecast" :key="entry.dateTime">
-              <td>{{ entry.dateTime }}</td>
-              <td>{{ entry.temp }}°C</td>
-              <td>{{ entry.rain }} mm</td>
-              <td>{{ entry.wind }} m/s</td>
-              <td>{{ entry.description }}</td>
-              <td>{{ entry.surfAdvice }}</td>
-            </tr>
-          </tbody>
-        </v-table>
-      </div>
+      <ForecastTable
+        :forecast="forecast"
+        :formatted-city-name="formattedCityName"
+      />
     </v-responsive>
   </v-container>
 </template>
@@ -72,12 +26,15 @@
   import { computed, onMounted, reactive, ref } from 'vue'
   import axios from 'axios'
   import CitySelector from './CitySelector.vue'
+  import ForecastTable from './ForecastTable.vue'
 
-  onMounted(() => {
+  onMounted(async () => {
+    if (!selectedCity.value) return
+
     const place = places.find(p => p.id === Number(selectedCity.value))
     if (place) {
       cityName.value = place.name
-      getCoordinates()
+      await getCoordinates()
     }
   })
 
@@ -118,17 +75,19 @@
   // Computed property voor cityName met hoofdletter
   const formattedCityName = computed(() => {
     const place = places.find(p => p.id === selectedCity.value)
-    return place ? place.name : cityName.value || ''
+    const capitalize = (name: string): string => name.charAt(0).toUpperCase() + name.slice(1)
+    return place ? place.name : capitalize(cityName.value) || ''
   })
 
   // API details
-  const apiKey = 'b41deb7dacc3ad8cec7aa9a0b07fa57f'
-  const geoApiUrl = 'http://api.openweathermap.org/geo/1.0/direct'
-  const forecastApiUrl = 'https://api.openweathermap.org/data/2.5/forecast'
+  const apiKey = import.meta.env.VITE_API_KEY
+  const forecastApiUrl = import.meta.env.VITE_FORECAST_API_URL
+  const geoApiUrl = import.meta.env.VITE_GEO_API_URL
 
   // Fetch coordinates
   const getCoordinates = async () => {
     const place = places.find(p => p.id === selectedCity.value)
+    console.log('place: ', place)
     if (place) {
       // Coördinaten van een bekende plaats
       await get3HourlyForecast(place.latitude, place.longitude)
@@ -137,6 +96,8 @@
 
   // Haal 3-uurlijkse voorspellingen op
   const get3HourlyForecast = async (latitude: number, longitude: number) => {
+    console.log('lat:', latitude)
+    console.log('lon:', longitude)
     try {
       const response = await axios.get(forecastApiUrl, {
         params: {
@@ -172,12 +133,16 @@
   }
 
   const handleCityChange = async (newCityName: string) => {
-    cityName.value = newCityName.trim()
+    const trimmedCityName = newCityName?.trim()
 
-    if (!cityName.value) return
+    if (!trimmedCityName) {
+      error.value = 'Voer een geldige stad in.'
+      return
+    }
 
+    cityName.value = trimmedCityName
     const matchedPlace = places.find(
-      p => p.name.toLowerCase() === cityName.value.toLowerCase()
+      p => p.name.toLowerCase() === trimmedCityName.toLowerCase()
     )
 
     if (matchedPlace) {
@@ -190,7 +155,7 @@
       try {
         const response = await axios.get(geoApiUrl, {
           params: {
-            q: cityName.value,
+            q: trimmedCityName,
             limit: 1,
             appid: apiKey,
           },
@@ -200,7 +165,7 @@
           const result = response.data[0]
           await get3HourlyForecast(result.lat, result.lon)
         } else {
-          error.value = `Geen resultaten gevonden voor "${cityName.value}".`
+          error.value = `Geen resultaten gevonden voor "${trimmedCityName}".`
         }
       } catch (err) {
         error.value = 'Er is een fout opgetreden bij het ophalen van de gegevens.'
@@ -236,16 +201,6 @@
 <style lang="scss">
 .text-h2 {
   margin-bottom: 16px
-}
-
-.text-body-1 {
-  white-space: pre-wrap; /* Zorgt dat \n wordt gerespecteerd */
-}
-
-.seperator-text {
-  margin: 0 16px; /* Ruimte tussen de velden */
-  font-size: 1rem;
-  align-self: center;
 }
 
 .v-tooltip > .v-overlay__content {
