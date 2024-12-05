@@ -11,6 +11,8 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
+import { configDefaults } from 'vitest/config'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -23,7 +25,7 @@ export default defineConfig({
         'vue',
         {
           'vue-router/auto': ['useRoute', 'useRouter'],
-        }
+        },
       ],
       dts: 'src/auto-imports.d.ts',
       eslintrc: {
@@ -46,7 +48,7 @@ export default defineConfig({
     }),
     Fonts({
       google: {
-        families: [ {
+        families: [{
           name: 'Roboto',
           styles: 'wght@100;300;400;500;700;900',
         }],
@@ -70,5 +72,17 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts',
+    exclude: [...configDefaults.exclude, 'node_modules/**'],
+    include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'json', 'html'],
+    },
+    css: true,
   },
 })
