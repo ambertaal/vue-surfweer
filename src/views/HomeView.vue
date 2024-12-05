@@ -1,4 +1,41 @@
 <template>
+  <v-navigation-drawer
+    v-model="drawer"
+  >
+    <v-list>
+      <v-list-item
+        subtitle="Best SurfAdvice Ever!"
+        title="Vuetify SurfAdvice"
+      />
+    </v-list>
+
+    <v-divider />
+
+    <v-list density="compact" nav>
+      <v-list-item prepend-icon="mdi-bell-outline" title="SurfAdvice" to="/" />
+      <v-list-item prepend-icon="mdi-information-outline" title="About" to="/about" />
+    </v-list>
+  </v-navigation-drawer>
+
+  <v-app-bar
+    color="primary"
+    image="https://picsum.photos/1920/1080?random"
+  >
+    <template #image>
+      <v-img
+        gradient="to top right, rgba(19,84,122,.8), rgba(128,208,199,.8)"
+      />
+    </template>
+
+    <template #prepend>
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+    </template>
+
+    <v-app-bar-title>Vuetify SurfAdvice App</v-app-bar-title>
+
+    <v-spacer />
+  </v-app-bar>
+
   <v-container class="fill-height">
     <v-responsive
       class="align-centerfill-height mx-auto"
@@ -7,7 +44,7 @@
       <div class="text-center">
         <h1 class="text-h2 font-weight-bold">Wanneer kan ik surfen?</h1>
         <CitySelector
-          v-model="selectedCity"
+          v-model="selectedCityId"
           :places="places"
           @city-changed="handleCityChange"
           @update:model-value="updateCity"
@@ -29,19 +66,19 @@
   import { get3HourlyForecast, getCoordinates } from '../api/WeatherService'
 
   onMounted(async () => {
-    const savedCityId = localStorage.getItem('selectedCity')
+    const savedCityId = localStorage.getItem('selectedCityId')
     const savedCityName = localStorage.getItem('selectedCityName')
 
     if (savedCityId) {
-      selectedCity.value = parseInt(savedCityId, 10)
-      const place = places.find(p => p.id === selectedCity.value)
+      selectedCityId.value = parseInt(savedCityId, 10)
+      const place = places.find(p => p.id === selectedCityId.value)
       if (place) {
         cityName.value = place.name
         await getForecastForCity(place.name)
       }
     } else if (savedCityName) {
       cityName.value = savedCityName
-      selectedCity.value = null
+      selectedCityId.value = null
       await getForecastForCity(savedCityName)
     }
   })
@@ -64,8 +101,9 @@
   }
 
   // Reactieve variabelen
+  const drawer = ref(null)
   const cityName = ref<string>('Scheveningen')
-  const selectedCity = ref<number | null>(null)
+  const selectedCityId = ref<number | null>(null)
   const forecast = ref<ForecastEntry[]>([])
   const error = ref<string | null>(null)
 
@@ -82,7 +120,7 @@
 
   // Computed property voor cityName met hoofdletter
   const formattedCityName = computed(() => {
-    const place = places.find(p => p.id === selectedCity.value)
+    const place = places.find(p => p.id === selectedCityId.value)
     const capitalize = (name: string): string => name.charAt(0).toUpperCase() + name.slice(1)
     return place ? place.name : capitalize(cityName.value) || ''
   })
@@ -118,12 +156,12 @@
 
     if (matchedPlace) {
       // Bekende stad
-      selectedCity.value = matchedPlace.id
-      localStorage.setItem('selectedCity', matchedPlace.id.toString())
+      selectedCityId.value = matchedPlace.id
+      localStorage.setItem('selectedCityId', matchedPlace.id.toString())
       await getForecastForCity(matchedPlace.name) // Haalt coördinaten van bekende plaatsen op
     } else {
       // Onbekende stad, gebruik Geo API
-      selectedCity.value = null
+      selectedCityId.value = null
       localStorage.setItem('selectedCityName', trimmedCityName)
       await getForecastForCity(trimmedCityName)
     }
@@ -131,7 +169,7 @@
 
   // Update cityName bij selecteren uit de dropdown
   const updateCity = (newCityId: number) => {
-    selectedCity.value = newCityId
+    selectedCityId.value = newCityId
     const place = places.find(p => p.id === newCityId)
     if (place) {
       cityName.value = place.name
@@ -154,11 +192,11 @@
     }
   }
 
-  watch(selectedCity, newCityId => {
+  watch(selectedCityId, newCityId => {
     if (newCityId !== null) {
-      localStorage.setItem('selectedCity', newCityId.toString())
+      localStorage.setItem('selectedCityId', newCityId.toString())
     } else {
-      localStorage.removeItem('selectedCity') // Verwijder de waarde als geen stad geselecteerd is
+      localStorage.removeItem('selectedCityId') // Verwijder de waarde als geen stad geselecteerd is
     }
   })
 </script>

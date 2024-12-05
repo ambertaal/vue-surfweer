@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, ref, watch } from 'vue'
+  import { ref, watch } from 'vue'
 
   // Typen voor de 'places' array en geselecteerde stad
   interface Place {

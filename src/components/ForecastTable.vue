@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from 'vue'
   import SurfAdviceTooltip from './SurfAdviceTooltip.vue'
 
   interface ForecastEntry {
