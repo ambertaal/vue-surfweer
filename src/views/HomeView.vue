@@ -23,18 +23,26 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, reactive, ref } from 'vue'
-  import CitySelector from './CitySelector.vue'
-  import ForecastTable from './ForecastTable.vue'
+  import { computed, onMounted, ref, watch } from 'vue'
+  import CitySelector from '@/components/CitySelector.vue'
+  import ForecastTable from '@/components/ForecastTable.vue'
   import { get3HourlyForecast, getCoordinates } from '../api/WeatherService'
 
   onMounted(async () => {
-    if (!selectedCity.value) return
+    const savedCityId = localStorage.getItem('selectedCity')
+    const savedCityName = localStorage.getItem('selectedCityName')
 
-    const place = places.find(p => p.id === Number(selectedCity.value))
-    if (place) {
-      cityName.value = place.name
-      await getForecastForCity(place.name)
+    if (savedCityId) {
+      selectedCity.value = parseInt(savedCityId, 10)
+      const place = places.find(p => p.id === selectedCity.value)
+      if (place) {
+        cityName.value = place.name
+        await getForecastForCity(place.name)
+      }
+    } else if (savedCityName) {
+      cityName.value = savedCityName
+      selectedCity.value = null
+      await getForecastForCity(savedCityName)
     }
   })
 
@@ -111,10 +119,12 @@
     if (matchedPlace) {
       // Bekende stad
       selectedCity.value = matchedPlace.id
+      localStorage.setItem('selectedCity', matchedPlace.id.toString())
       await getForecastForCity(matchedPlace.name) // Haalt coördinaten van bekende plaatsen op
     } else {
       // Onbekende stad, gebruik Geo API
       selectedCity.value = null
+      localStorage.setItem('selectedCityName', trimmedCityName)
       await getForecastForCity(trimmedCityName)
     }
   }
@@ -143,6 +153,14 @@
       return 'Niet geschikt'
     }
   }
+
+  watch(selectedCity, newCityId => {
+    if (newCityId !== null) {
+      localStorage.setItem('selectedCity', newCityId.toString())
+    } else {
+      localStorage.removeItem('selectedCity') // Verwijder de waarde als geen stad geselecteerd is
+    }
+  })
 </script>
 
 <style lang="scss">
