@@ -4,16 +4,16 @@
   >
     <v-list>
       <v-list-item
-        subtitle="Best SurfAdvice Ever!"
-        title="Vuetify SurfAdvice"
+        subtitle="Best surfadvice ever!"
+        title="Surfadvies"
       />
     </v-list>
 
     <v-divider />
 
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-bell-outline" title="SurfAdvice" to="/" />
-      <v-list-item prepend-icon="mdi-information-outline" title="About" to="/about" />
+      <v-list-item prepend-icon="mdi-bell-outline" title="Surfadvies" to="/" />
+      <v-list-item prepend-icon="mdi-information-outline" title="Over" to="/about" />
     </v-list>
   </v-navigation-drawer>
 
@@ -31,7 +31,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
     </template>
 
-    <v-app-bar-title>Vuetify SurfAdvice App</v-app-bar-title>
+    <v-app-bar-title>Surfadvies App</v-app-bar-title>
 
     <v-spacer />
   </v-app-bar>
@@ -101,7 +101,7 @@
   }
 
   // Reactieve variabelen
-  const drawer = ref(null)
+  const drawer = ref(true)
   const cityName = ref<string>('Scheveningen')
   const selectedCityId = ref<number | null>(null)
   const forecast = ref<ForecastEntry[]>([])
