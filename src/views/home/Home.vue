@@ -1,21 +1,5 @@
 <template>
-  <v-navigation-drawer
-    v-model="drawer"
-  >
-    <v-list>
-      <v-list-item
-        subtitle="Best surfadvies ever!"
-        title="Surfadvies"
-      />
-    </v-list>
-
-    <v-divider />
-
-    <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-bell-outline" title="Surfadvies" to="/" />
-      <v-list-item prepend-icon="mdi-information-outline" title="Over" to="/about" />
-    </v-list>
-  </v-navigation-drawer>
+  <navigation v-model:drawer="drawer" />
 
   <v-app-bar
     color="primary"
@@ -56,6 +40,7 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import CitySelector from '@/views/home/components/CitySelector.vue'
   import ForecastTable from '@/views/home/components/ForecastTable.vue'
+  import navigation from '@/components/navigation.vue'
   import { get3HourlyForecast, getCoordinates } from '@/api/WeatherService'
 
   onMounted(async () => {

@@ -10,6 +10,7 @@ declare module 'vue' {
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     CitySelector: typeof import('./src/components/CitySelector.vue')['default']
     ForecastTable: typeof import('./src/components/ForecastTable.vue')['default']
+    Navigation: typeof import('./src/components/navigation.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SurfAdviceTooltip: typeof import('./src/components/SurfAdviceTooltip.vue')['default']
