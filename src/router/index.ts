@@ -1,17 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
+import Home from '@/views/home/Home.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Todo',
-    component: HomeView,
+    component: Home,
   },
   {
     path: '/about',
     name: 'About',
     // Dit zorgt ervoor dat de component pas geladen wordt wanneer de route bezocht wordt
-    component: () => import('../views/About.vue'),
+    component: () => import('@/views/about/About.vue'),
   },
 ]
 

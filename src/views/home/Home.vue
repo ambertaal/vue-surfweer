@@ -4,7 +4,7 @@
   >
     <v-list>
       <v-list-item
-        subtitle="Best surfadvice ever!"
+        subtitle="Best surfadvies ever!"
         title="Surfadvies"
       />
     </v-list>
@@ -19,19 +19,12 @@
 
   <v-app-bar
     color="primary"
-    image="https://picsum.photos/1920/1080?random"
   >
-    <template #image>
-      <v-img
-        gradient="to top right, rgba(19,84,122,.8), rgba(128,208,199,.8)"
-      />
-    </template>
-
     <template #prepend>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
     </template>
 
-    <v-app-bar-title>Surfadvies App</v-app-bar-title>
+    <v-app-bar-title>Surfadvies</v-app-bar-title>
 
     <v-spacer />
   </v-app-bar>
@@ -61,9 +54,9 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref, watch } from 'vue'
-  import CitySelector from '@/components/CitySelector.vue'
-  import ForecastTable from '@/components/ForecastTable.vue'
-  import { get3HourlyForecast, getCoordinates } from '../api/WeatherService'
+  import CitySelector from '@/views/home/components/CitySelector.vue'
+  import ForecastTable from '@/views/home/components/ForecastTable.vue'
+  import { get3HourlyForecast, getCoordinates } from '@/api/WeatherService'
 
   onMounted(async () => {
     const savedCityId = localStorage.getItem('selectedCityId')
