@@ -1,12 +1,12 @@
 <template>
   <v-row align="center" class="d-flex" justify="center">
-    <v-col cols="12" lg="4">
+    <v-col cols="5" md="5">
       <CityDropdown v-model="selectedCity" :places="places" />
     </v-col>
-
-    <span class="seperator-text">of</span>
-
-    <v-col cols="12" lg="4">
+    <v-col cols="0" md="auto">
+      <span class="seperator-text">of</span>
+    </v-col>
+    <v-col cols="5" md="5">
       <CityInput v-model="cityName" @city-changed="onEnter" />
     </v-col>
   </v-row>
