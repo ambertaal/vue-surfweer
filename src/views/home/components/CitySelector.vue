@@ -53,7 +53,6 @@
   const cityName = ref('')
 
   watch(selectedCity, newCityId => {
-    console.log('newCityId: ', newCityId)
     if (newCityId === null) {
       cityName.value = ''
     } else {
@@ -66,7 +65,6 @@
   })
 
   watch(cityName, newCityName => {
-    console.log('newCityName: ', newCityName)
     if (!newCityName?.trim()) {
       selectedCity.value = null
       return
@@ -83,7 +81,6 @@
 
   const onEnter = () => {
     const trimmedName = cityName.value.trim()
-    console.log('trimmedName: ', trimmedName)
 
     emit('cityChanged', trimmedName)
   }
