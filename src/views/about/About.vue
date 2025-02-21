@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
   import { ref } from 'vue'
-  import NavigationDrawer from '@/components/NavigationDrawer.vue'
-  import AppBar from '@/components/AppBar.vue'
+  import NavigationDrawer from '../../components/NavigationDrawer.vue'
+  import AppBar from '../../components/AppBar.vue'
 
   const drawer = ref(true)
 
