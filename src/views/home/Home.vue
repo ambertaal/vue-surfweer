@@ -8,7 +8,7 @@
       max-width="900"
     >
       <div class="text-center">
-        <h1 class="text-h2 font-weight-bold">Wanneer kan ik surfen?</h1>
+        <h1>Wanneer kan ik surfen?</h1>
         <CitySelector
           v-model="selectedCityId"
           :places="places"
@@ -180,8 +180,23 @@
 </script>
 
 <style lang="scss">
-.text-h2 {
-  margin-bottom: 16px
+.h1-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh; /* Zorgt ervoor dat de h1 in het midden van de viewport staat */
+  text-align: center;
+}
+
+/* Voor mobiele schermen */
+@media (max-width: 600px) {
+  .h1-container {
+    height: 10vh; /* Op mobiel mag de h1 hoger staan */
+  }
+
+  h1 {
+    font-size: 1.8rem !important;
+  }
 }
 
 </style>
