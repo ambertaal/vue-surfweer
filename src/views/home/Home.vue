@@ -1,17 +1,6 @@
 <template>
-  <navigation v-model:drawer="drawer" />
-
-  <v-app-bar
-    color="primary"
-  >
-    <template #prepend>
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-    </template>
-
-    <v-app-bar-title>Surfadvies</v-app-bar-title>
-
-    <v-spacer />
-  </v-app-bar>
+  <NavigationDrawer v-model:drawer="drawer" />
+  <AppBar v-model:drawer="drawer" />
 
   <v-container class="fill-height">
     <v-responsive
@@ -40,7 +29,8 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import CitySelector from '@/views/home/components/CitySelector.vue'
   import ForecastTable from '@/views/home/components/ForecastTable.vue'
-  import navigation from '@/components/navigation.vue'
+  import NavigationDrawer from '@/components/NavigationDrawer.vue'
+  import AppBar from '@/components/AppBar.vue'
   import { get3HourlyForecast, getCoordinates } from '@/api/WeatherService'
 
   onMounted(async () => {
