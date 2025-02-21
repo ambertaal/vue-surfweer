@@ -13,25 +13,18 @@
 
     <v-list density="compact" nav>
       <v-list-item prepend-icon="mdi-bell-outline" title="Surfadvies" to="/" />
-      <v-list-item prepend-icon="mdi-information-outline" title="About" to="/about" />
+      <v-list-item prepend-icon="mdi-information-outline" title="Over" to="/about" />
     </v-list>
   </v-navigation-drawer>
 
   <v-app-bar
     color="primary"
-    image="https://picsum.photos/1920/1080?random"
   >
-    <template #image>
-      <v-img
-        gradient="to top right, rgba(19,84,122,.8), rgba(128,208,199,.8)"
-      />
-    </template>
-
     <template #prepend>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
     </template>
 
-    <v-app-bar-title>Vuetify SurfAdvice App</v-app-bar-title>
+    <v-app-bar-title>Surfadvies</v-app-bar-title>
 
     <v-spacer />
   </v-app-bar>
@@ -42,8 +35,8 @@
       max-width="900"
     >
       <div class="about pa-6">
-        <h1>About Vuetify Surfadvice</h1>
-        <p>This is a side project to practice and learn stuff.</p>
+        <h1>Over Surfadvies</h1>
+        <p>Dit is een side project van Amber om wat dingen te oefenen en leren.</p>
       </div>
     </v-responsive>
   </v-container>
