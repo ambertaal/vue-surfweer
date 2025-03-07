@@ -5,7 +5,6 @@ import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
 import { ForecastEntry } from '@/types'
 
-// Mock data voor de forecast prop
 const forecastMock: ForecastEntry[] = [
   {
     dateTime: '2025-03-07 12:00',
@@ -40,8 +39,59 @@ describe('ForecastTable.vue', () => {
     })
 
     expect(wrapper.exists()).toBe(true)
+  })
+
+  it('toont de juiste koptekst met de stadsnaam', () => {
+    const wrapper = mount(ForecastTable, {
+      global: { plugins: [vuetify] },
+      props: { formattedCityName: 'Scheveningen', forecast: forecastMock },
+    })
+
     expect(wrapper.text()).toContain('Weer komende 5 dagen, per 3 uur in Scheveningen')
-    expect(wrapper.text()).toContain('Licht bewolkt')
-    expect(wrapper.text()).toContain('Goede condities')
+  })
+
+  it('rendert geen tabel als er geen forecast data is', () => {
+    const wrapper = mount(ForecastTable, {
+      global: { plugins: [vuetify] },
+      props: { formattedCityName: 'Scheveningen', forecast: [] },
+    })
+
+    expect(wrapper.find('table').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Datum & Tijd')
+  })
+
+  it('toont de juiste aantal rijen op basis van de forecast data', () => {
+    const wrapper = mount(ForecastTable, {
+      global: { plugins: [vuetify] },
+      props: { formattedCityName: 'Scheveningen', forecast: forecastMock },
+    })
+
+    const rows = wrapper.findAll('tbody tr')
+    expect(rows.length).toBe(forecastMock.length)
+  })
+
+  it('toont correcte weerdata in de tabel', () => {
+    const wrapper = mount(ForecastTable, {
+      global: { plugins: [vuetify] },
+      props: { formattedCityName: 'Scheveningen', forecast: forecastMock },
+    })
+
+    forecastMock.forEach(entry => {
+      expect(wrapper.text()).toContain(entry.dateTime)
+      expect(wrapper.text()).toContain(`${entry.temp}°C`)
+      expect(wrapper.text()).toContain(`${entry.rain} mm`)
+      expect(wrapper.text()).toContain(`${entry.wind} m/s`)
+      expect(wrapper.text()).toContain(entry.description)
+      expect(wrapper.text()).toContain(entry.surfAdvice)
+    })
+  })
+
+  it('bevat een SurfAdviceTooltip in de tabelkop', () => {
+    const wrapper = mount(ForecastTable, {
+      global: { plugins: [vuetify] },
+      props: { formattedCityName: 'Scheveningen', forecast: forecastMock },
+    })
+
+    expect(wrapper.findComponent({ name: 'SurfAdviceTooltip' }).exists()).toBe(true)
   })
 })
