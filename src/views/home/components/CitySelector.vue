@@ -16,11 +16,7 @@
   import { ref, watch } from 'vue'
   import CityDropdown from './CityDropdown.vue'
   import CityInput from './CityInput.vue'
-
-  interface Place {
-    id: number;
-    name: string;
-  }
+  import { Place } from '@/types'
 
   const props = defineProps<{ places: Place[], modelValue: number | null }>()
   const emit = defineEmits(['update:modelValue', 'cityChanged'])

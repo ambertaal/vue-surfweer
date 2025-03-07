@@ -32,6 +32,7 @@
   import NavigationDrawer from '../../components/NavigationDrawer.vue'
   import AppBar from '../../components/AppBar.vue'
   import { get3HourlyForecast, getCoordinates } from '../../api/WeatherService'
+  import { ForecastEntry, PlaceWithCoordinates } from '@/types'
 
   // Controleert of er een stad is opgeslagen in localStorage.
   // Laadt de weersvoorspelling van die stad.
@@ -53,23 +54,6 @@
     }
   })
 
-  // Definieer interfaces voor typecontrole
-  interface Place {
-    id: number
-    name: string
-    latitude: number
-    longitude: number
-  }
-
-  interface ForecastEntry {
-    dateTime: string
-    temp: number
-    rain: number
-    wind: number
-    description: string
-    surfAdvice: string
-  }
-
   // Reactieve variabelen
   const drawer = ref(true)
   const cityName = ref<string>('Scheveningen')
@@ -78,7 +62,7 @@
   const error = ref<string | null>(null)
 
   // Bekende plaatsen
-  const places: Place[] = [
+  const places: PlaceWithCoordinates[] = [
     { id: 1, name: 'Scheveningen', latitude: 52.1089, longitude: 4.2769 },
     { id: 2, name: 'Hoek van Holland', latitude: 51.9775, longitude: 4.1338 },
     { id: 3, name: 'Katwijk', latitude: 52.203, longitude: 4.3988 },

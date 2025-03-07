@@ -10,12 +10,8 @@
 </template>
 
 <script setup lang="ts">
+  import { Place } from '@/types'
   import { ref, watch } from 'vue'
-
-  interface Place {
-    id: number;
-    name: string;
-  }
 
   const props = defineProps<{
     places: Place[];

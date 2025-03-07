@@ -33,18 +33,10 @@
 </template>
 
 <script setup lang="ts">
+  import { ForecastEntry } from '@/types'
   import SurfAdviceTooltip from './SurfAdviceTooltip.vue'
 
-  interface ForecastEntry {
-    dateTime: string
-    temp: number
-    rain: number
-    wind: number
-    description: string
-    surfAdvice: string
-  }
-
-  const props = defineProps({
+  defineProps({
     formattedCityName: String,
     forecast: {
       type: Array as () => ForecastEntry[],

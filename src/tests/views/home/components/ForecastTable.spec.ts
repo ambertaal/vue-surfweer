@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest'
 import ForecastTable from '../../../../views/home/components/ForecastTable.vue'
 import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
+import { ForecastEntry } from '@/types'
 
 // Mock data voor de forecast prop
-const forecastMock = [
+const forecastMock: ForecastEntry[] = [
   {
     dateTime: '2025-03-07 12:00',
     temp: 15,
