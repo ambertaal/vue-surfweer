@@ -27,11 +27,11 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref, watch } from 'vue'
-  import CitySelector from '@/views/home/components/CitySelector.vue'
-  import ForecastTable from '@/views/home/components/ForecastTable.vue'
-  import NavigationDrawer from '@/components/NavigationDrawer.vue'
-  import AppBar from '@/components/AppBar.vue'
-  import { get3HourlyForecast, getCoordinates } from '@/api/WeatherService'
+  import CitySelector from '../home/components/CitySelector.vue'
+  import ForecastTable from '../home/components/ForecastTable.vue'
+  import NavigationDrawer from '../../components/NavigationDrawer.vue'
+  import AppBar from '../../components/AppBar.vue'
+  import { get3HourlyForecast, getCoordinates } from '../../api/WeatherService'
 
   // Controleert of er een stad is opgeslagen in localStorage.
   // Laadt de weersvoorspelling van die stad.
