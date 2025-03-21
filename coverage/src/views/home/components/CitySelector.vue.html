@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/33</span>
+                <span class='fraction'>33/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">66.66% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>2/3</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>22/33</span>
+                <span class='fraction'>33/33</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -132,25 +132,25 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
   &lt;v-row align="center" class="d-flex" justify="center"&gt;
     &lt;v-col cols="5" md="5"&gt;
-      &lt;CityDropdown v-model="<span class="fstat-no" title="function not covered" >selectedCity" :p</span>laces="places" /&gt;
+      &lt;CityDropdown v-model="selectedCity" :places="places" /&gt;
     &lt;/v-col&gt;
     &lt;v-col cols="0" md="auto"&gt;
       &lt;span class="seperator-text"&gt;of&lt;/span&gt;
@@ -174,20 +174,20 @@
   const cityName = ref('')
 &nbsp;
   watch(selectedCity, newCityId =&gt; {
-<span class="cstat-no" title="statement not covered" >    if (newCityId === null) {</span>
-<span class="cstat-no" title="statement not covered" >      cityName.value = ''</span>
-<span class="cstat-no" title="statement not covered" >    } else {</span>
-<span class="cstat-no" title="statement not covered" >      const matchedPlace = props.places.find(p =&gt; p.id === newCityId)</span>
-<span class="cstat-no" title="statement not covered" >      if (matchedPlace) {</span>
-<span class="cstat-no" title="statement not covered" >        cityName.value = matchedPlace.name</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >    emit('update:modelValue', newCityId)</span>
+    if (newCityId === null) {
+      cityName.value = ''
+    } else {
+      const matchedPlace = props.places.find(p =&gt; p.id === newCityId)
+      if (matchedPlace) {
+        cityName.value = matchedPlace.name
+      }
+    }
+    emit('update:modelValue', newCityId)
   })
 &nbsp;
-  const onEnter = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    emit('cityChanged', cityName.value.trim())</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+  const onEnter = () =&gt; {
+    emit('cityChanged', cityName.value.trim())
+  }
 &lt;/script&gt;
 &nbsp;</pre></td></tr></table></pre>
 
@@ -196,7 +196,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-21T08:40:18.198Z
+                at 2025-03-21T10:40:26.080Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
