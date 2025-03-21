@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import CityDropdown from '../../../../views/home/components/CityDropdown.vue'
+import CityDropdown from '../../../../../views/home/components/CityDropdown.vue'
 
 const vuetify = createVuetify({ components, directives })
 

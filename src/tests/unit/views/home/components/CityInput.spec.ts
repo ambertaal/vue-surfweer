@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import CityInput from '../../../../views/home/components/CityInput.vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import CityInput from '../../../../../views/home/components/CityInput.vue'
 
 const vuetify = createVuetify({ components, directives })
 

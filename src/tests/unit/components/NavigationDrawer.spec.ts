@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import NavigationWrapper from '../utils/NavigationWrapper'
+import NavigationWrapper from '../../utils/NavigationWrapper'
 
 const vuetify = createVuetify({ components, directives })
 

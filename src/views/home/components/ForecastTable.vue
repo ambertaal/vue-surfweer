@@ -10,7 +10,7 @@
             <th>Datum & Tijd</th>
             <th>Temp (°C)</th>
             <th>Neerslag (mm)</th>
-            <th>Wind (m/s)</th>
+            <th>Windkracht</th>
             <th>Weer</th>
             <th>Surfadvies
               <SurfAdviceTooltip />
@@ -20,9 +20,9 @@
         <tbody>
           <tr v-for="entry in forecast" :key="entry.dateTime">
             <td>{{ entry.dateTime }}</td>
-            <td>{{ entry.temp }}°C</td>
+            <td>{{ entry.temp }}°</td>
             <td>{{ entry.rain }} mm</td>
-            <td>{{ entry.wind }} m/s</td>
+            <td>{{ entry.wind }}</td>
             <td>{{ entry.description }}</td>
             <td>{{ entry.surfAdvice }}</td>
           </tr>
@@ -43,7 +43,6 @@
       required: true,
     },
   })
-
 </script>
 
 <style scoped>

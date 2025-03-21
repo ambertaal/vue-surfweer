@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import ForecastTable from '../../../../views/home/components/ForecastTable.vue'
+import ForecastTable from '../../../../../views/home/components/ForecastTable.vue'
 import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
 import { ForecastEntry } from '@/types'

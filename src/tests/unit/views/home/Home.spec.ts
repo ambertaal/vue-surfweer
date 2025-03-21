@@ -1,10 +1,10 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import Home from '../../../views/home/Home.vue'
-import NavigationDrawer from '../../../components/NavigationDrawer.vue'
-import AppBar from '../../../components/AppBar.vue'
-import CitySelector from '../../../views/home/components/CitySelector.vue'
-import ForecastTable from '../../../views/home/components/ForecastTable.vue'
+import Home from '../../../../views/home/Home.vue'
+import NavigationDrawer from '../../../../components/NavigationDrawer.vue'
+import AppBar from '../../../../components/AppBar.vue'
+import CitySelector from '../../../../views/home/components/CitySelector.vue'
+import ForecastTable from '../../../../views/home/components/ForecastTable.vue'
 
 describe('Home.vue', () => {
   it('rendert zonder fouten', () => {

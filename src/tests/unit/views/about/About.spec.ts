@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import About from '../../../views/about/About.vue'
-import NavigationDrawer from '../../../components/NavigationDrawer.vue'
-import AppBar from '../../../components/AppBar.vue'
+import About from '../../../../views/about/About.vue'
+import NavigationDrawer from '../../../../components/NavigationDrawer.vue'
+import AppBar from '../../../../components/AppBar.vue'
 
 describe('About.vue', () => {
   it('rendert zonder fouten', () => {
