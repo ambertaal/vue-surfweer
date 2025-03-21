@@ -10,5 +10,9 @@ export default defineConfig({
       inline: ['vuetify'], // Zorgt ervoor dat Vuetify correct geladen wordt
     },
     css: false, // Voorkomt CSS-verwerkingsfouten
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+    },
   },
 })
