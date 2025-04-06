@@ -1,15 +1,31 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 import CitySelector from '../../../../../views/home/components/CitySelector.vue'
+
+const vuetify = createVuetify({ components, directives })
 
 describe('CitySelector.vue', () => {
   it('rendert zonder fouten', () => {
-    const wrapper = mount(CitySelector)
+    const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        places: [{ id: 1, name: 'Scheveningen' }],
+        modelValue: 1,
+      },
+    })
     expect(wrapper.exists()).toBe(true)
   })
 
   it('leegt cityName en emit update:modelValue bij null', async () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+      },
       props: {
         places: [{ id: 1, name: 'Scheveningen' }],
         modelValue: 1,
@@ -27,6 +43,9 @@ describe('CitySelector.vue', () => {
 
   it('zet cityName bij geldige selectedCity en emit update:modelValue', async () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+      },
       props: {
         places: [{ id: 1, name: 'Scheveningen' }],
         modelValue: null,
@@ -44,6 +63,9 @@ describe('CitySelector.vue', () => {
 
   it('emit cityChanged met getrimde cityName bij onEnter', async () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+      },
       props: {
         places: [],
         modelValue: null,
@@ -59,13 +81,14 @@ describe('CitySelector.vue', () => {
 
   it('verandert selectedCity via CityDropdown', async () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+        stubs: ['CityDropdown', 'CityInput'], // als je geen echte componenten gebruikt
+      },
       props: {
         places: [{ id: 1, name: 'Scheveningen' }],
         modelValue: null,
-      },
-      global: {
-        stubs: ['CityDropdown', 'CityInput'], // als je geen echte componenten gebruikt
-      },
+      }
     })
 
     // Simuleer dat CityDropdown iets terugstuurt via v-model
@@ -78,13 +101,14 @@ describe('CitySelector.vue', () => {
 
   it('roept onEnter aan bij city-changed event vanuit CityInput', async () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+        stubs: ['CityDropdown', 'CityInput'], // als je niet de echte componenten gebruikt
+      },
       props: {
         places: [],
         modelValue: null,
-      },
-      global: {
-        stubs: ['CityDropdown', 'CityInput'], // als je niet de echte componenten gebruikt
-      },
+      }
     })
 
     // Set vooraf een cityName (zoals een gebruiker die iets invult)
@@ -99,6 +123,9 @@ describe('CitySelector.vue', () => {
 
   it('selectedCity is gelijk aan modelValue bij mount (maar cityName nog niet gezet)', () => {
     const wrapper = mount(CitySelector, {
+      global: {
+        plugins: [vuetify],
+      },
       props: {
         places: [{ id: 1, name: 'Domburg' }],
         modelValue: 1,
