@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 // Plugins
 import Components from 'unplugin-vue-components/vite'
 import Vue from '@vitejs/plugin-vue'
@@ -43,5 +45,15 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  test: {
+    // ...
+    globals: true,
+    environment: 'jsdom',
+    server: {
+      deps: {
+        inline: ['vuetify'],
+      },
+    },
   },
 })

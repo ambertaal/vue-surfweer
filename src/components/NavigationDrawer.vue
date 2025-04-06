@@ -1,21 +1,23 @@
 <template>
-  <v-navigation-drawer
-    v-model="localDrawer"
-  >
-    <v-list>
-      <v-list-item
-        subtitle="Best surfadvies ever!"
-        title="Surfadvies"
-      />
-    </v-list>
+  <v-app>
+    <v-navigation-drawer
+      v-model="localDrawer"
+    >
+      <v-list>
+        <v-list-item
+          subtitle="Best surfadvies ever!"
+          title="Surfadvies"
+        />
+      </v-list>
 
-    <v-divider />
+      <v-divider />
 
-    <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-bell-outline" title="Surfadvies" to="/" />
-      <v-list-item prepend-icon="mdi-information-outline" title="Over" to="/about" />
-    </v-list>
-  </v-navigation-drawer>
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-bell-outline" title="Surfadvies" to="/" />
+        <v-list-item prepend-icon="mdi-information-outline" title="Over" to="/about" />
+      </v-list>
+    </v-navigation-drawer>
+  </v-app>
 </template>
 
 <script setup lang="ts">

@@ -1,15 +1,17 @@
 <template>
-  <v-app-bar
-    color="primary"
-  >
-    <template #prepend>
-      <v-app-bar-nav-icon @click="toggleDrawer" />
-    </template>
+  <v-app>
+    <v-app-bar
+      color="primary"
+    >
+      <template #prepend>
+        <v-app-bar-nav-icon @click="toggleDrawer" />
+      </template>
 
-    <v-app-bar-title>Surfadvies</v-app-bar-title>
+      <v-app-bar-title>Surfadvies</v-app-bar-title>
 
-    <v-spacer />
-  </v-app-bar>
+      <v-spacer />
+    </v-app-bar>
+  </v-app>
 </template>
 
 <script setup lang="ts">
