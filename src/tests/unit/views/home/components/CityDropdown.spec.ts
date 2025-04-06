@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -8,34 +8,37 @@ import CityDropdown from '../../../../../views/home/components/CityDropdown.vue'
 const vuetify = createVuetify({ components, directives })
 
 describe('CityDropdown.vue', () => {
+  let wrapper: VueWrapper
+
+  const mountCityDropdown = () => {
+    return mount(CityDropdown, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        places,
+        modelValue: null,
+      },
+    })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
   const places = [
     { id: 1, name: 'Amsterdam' },
     { id: 2, name: 'Rotterdam' },
   ]
 
   it('rendert zonder fouten', () => {
-    const wrapper = mount(CityDropdown, {
-      global: {
-        plugins: [vuetify],
-      },
-      props: {
-        places,
-        modelValue: null,
-      },
-    })
+    wrapper = mountCityDropdown()
+
     expect(wrapper.exists()).toBe(true)
   })
 
   it('toont het correcte dropdown label', async () => {
-    const wrapper = mount(CityDropdown, {
-      global: {
-        plugins: [vuetify],
-      },
-      props: {
-        places,
-        modelValue: null,
-      },
-    })
+    wrapper = mountCityDropdown()
 
     const label = wrapper.find('label')
     expect(label.text()).toBe('Kies een stad')

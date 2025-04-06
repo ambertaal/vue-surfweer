@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -8,11 +8,21 @@ import CityInput from '../../../../../views/home/components/CityInput.vue'
 const vuetify = createVuetify({ components, directives })
 
 describe('CityInput.vue', () => {
-  it('rendert zonder fouten', () => {
-    const wrapper = mount(CityInput, {
+  let wrapper: VueWrapper
+
+  const mountCityInput = () => {
+    return mount(CityInput, {
       global: { plugins: [vuetify] },
       props: { modelValue: '' },
     })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
+  it('rendert zonder fouten', () => {
+    wrapper = mountCityInput()
     expect(wrapper.exists()).toBe(true)
   })
 
@@ -27,10 +37,7 @@ describe('CityInput.vue', () => {
   })
 
   it('emit update:modelValue bij input', async () => {
-    const wrapper = mount(CityInput, {
-      global: { plugins: [vuetify] },
-      props: { modelValue: '' },
-    })
+    wrapper = mountCityInput()
 
     const input = wrapper.find('input')
     await input.setValue('Rotterdam')

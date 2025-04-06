@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import ForecastTable from '../../../../../views/home/components/ForecastTable.vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -29,8 +29,10 @@ const forecastMock: ForecastEntry[] = [
 const vuetify = createVuetify({ components, directives })
 
 describe('ForecastTable.vue', () => {
-  it('rendert zonder fouten met props', () => {
-    const wrapper = mount(ForecastTable, {
+  let wrapper: VueWrapper
+
+  const mountForecastTable = () => {
+    return mount(ForecastTable, {
       global: {
         plugins: [vuetify],
       },
@@ -39,15 +41,20 @@ describe('ForecastTable.vue', () => {
         forecast: forecastMock,
       },
     })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
+  it('rendert zonder fouten met props', () => {
+    wrapper = mountForecastTable()
 
     expect(wrapper.exists()).toBe(true)
   })
 
   it('toont de juiste koptekst met de stadsnaam', () => {
-    const wrapper = mount(ForecastTable, {
-      global: { plugins: [vuetify] },
-      props: { formattedCityName: 'Scheveningen', forecast: forecastMock },
-    })
+    wrapper = mountForecastTable()
 
     expect(wrapper.text()).toContain('Weer komende 5 dagen, per 3 uur in Scheveningen')
   })

@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -14,8 +14,10 @@ global.ResizeObserver = class {
 }
 
 describe('NavigationDrawer.vue', () => {
-  it('rendert zonder fouten', () => {
-    const wrapper = mount(NavigationDrawer, {
+  let wrapper: VueWrapper
+
+  const mountNavigationDrawer = () => {
+    return mount(NavigationDrawer, {
       global: {
         plugins: [vuetify],
       },
@@ -23,6 +25,14 @@ describe('NavigationDrawer.vue', () => {
         drawer: false,
       },
     })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
+  it('rendert zonder fouten', () => {
+    wrapper = mountNavigationDrawer()
     expect(wrapper.findComponent({ name: 'NavigationDrawer' }).exists()).toBe(true)
   })
 

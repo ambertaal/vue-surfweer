@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -8,8 +8,10 @@ import CitySelector from '../../../../../views/home/components/CitySelector.vue'
 const vuetify = createVuetify({ components, directives })
 
 describe('CitySelector.vue', () => {
-  it('rendert zonder fouten', () => {
-    const wrapper = mount(CitySelector, {
+  let wrapper: VueWrapper
+
+  const mountCitySelector = () => {
+    return mount(CitySelector, {
       global: {
         plugins: [vuetify],
       },
@@ -18,19 +20,19 @@ describe('CitySelector.vue', () => {
         modelValue: 1,
       },
     })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
+  it('rendert zonder fouten', () => {
+    wrapper = mountCitySelector()
     expect(wrapper.exists()).toBe(true)
   })
 
   it('leegt cityName en emit update:modelValue bij null', async () => {
-    const wrapper = mount(CitySelector, {
-      global: {
-        plugins: [vuetify],
-      },
-      props: {
-        places: [{ id: 1, name: 'Scheveningen' }],
-        modelValue: 1,
-      },
-    })
+    wrapper = mountCitySelector()
 
     wrapper.vm.selectedCity = null
     await wrapper.vm.$nextTick()
@@ -108,7 +110,7 @@ describe('CitySelector.vue', () => {
       props: {
         places: [],
         modelValue: null,
-      }
+      },
     })
 
     // Set vooraf een cityName (zoals een gebruiker die iets invult)
@@ -122,15 +124,7 @@ describe('CitySelector.vue', () => {
   })
 
   it('selectedCity is gelijk aan modelValue bij mount (maar cityName nog niet gezet)', () => {
-    const wrapper = mount(CitySelector, {
-      global: {
-        plugins: [vuetify],
-      },
-      props: {
-        places: [{ id: 1, name: 'Domburg' }],
-        modelValue: 1,
-      },
-    })
+    wrapper = mountCitySelector()
 
     expect(wrapper.vm.selectedCity).toBe(1)
     expect(wrapper.vm.cityName).toBe('')

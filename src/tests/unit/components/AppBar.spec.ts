@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -14,8 +14,10 @@ global.ResizeObserver = class {
 }
 
 describe('AppBar.vue', () => {
-  it('rendert zonder fouten', () => {
-    const wrapper = mount(AppBar, {
+  let wrapper: VueWrapper
+
+  const mountAppBar = () => {
+    return mount(AppBar, {
       global: {
         plugins: [vuetify],
       },
@@ -23,6 +25,14 @@ describe('AppBar.vue', () => {
         drawer: false,
       },
     })
+  }
+
+  afterEach(() => {
+    if (wrapper) wrapper.unmount()
+  })
+
+  it('rendert zonder fouten', () => {
+    wrapper = mountAppBar()
     expect(wrapper.findComponent({ name: 'AppBar' }).exists()).toBe(true)
   })
 
